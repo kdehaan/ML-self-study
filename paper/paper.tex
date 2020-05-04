@@ -10,6 +10,8 @@
 \usepackage{subfig}
 \usepackage{listings}
 \usepackage[mathscr]{euscript}
+\usepackage{amsmath}
+
 
 % \usepackage{subcaption}
 \lstset{numbers=left,stepnumber=1,basicstyle=\footnotesize\ttfamily}
@@ -18,7 +20,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \def\code#1{\texttt{#1}}
 \def\dist{\mathcal{D}}
 \def\hypspace{\mathcal{H}}
-
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
 
 \makeatletter
 \def\endthebibliography{%
@@ -63,6 +66,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \item $h$: a hypothesis, also referred to as a $model$. A prediction of the real mapping function $f$
     \item $\hypspace$: a finite hypothesis space
     \item $L$: a $learner$, the algorithm or device that produces a hypothesis $h$
+    \item \emph{risk}: used interchangeably with 'error rate'
+    \item $\delta$: the probability of getting a nonrepresentative sample $S$ from $\dist$
   \end{itemize} 
   \subsection{Background: Empirical Risk Minimization}
   To properly understand the theory behind PAC, it is valuable to have an understanding of Empirical Risk Minimization (hereafter ERM). The fundamental theory behind ERM is that given some $h \in \hypspace$ produced from the training set $S$, there will be some error between $h_S$ and the real $f$, demonstrated in equation \ref{trueerror}. The true error is equal to the probability of sampling $x$ from $\dist$ such that prediction of $h$ is different from that of $f$\cite{shais}.
@@ -79,9 +84,24 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     L_S(h) = \frac{|\{i \in [m] : h(x_i) \neq y_i\}|}{m}, [m] = \{1, ..., m\}
   \end{equation}
 
-  In contrast to the real error (or \emph{actual risk}) the value of empirical risk is available to the learner and is therefore an obvious choice for minimization - hence, the goal of \emph{empirical risk minimization}.
+  In contrast to the real error (or \emph{actual risk}) the value of empirical risk is available to the learner and is therefore an obvious choice for minimization - hence, the goal of \emph{empirical risk minimization} defined in eq. \ref{erm} \cite{shais}.
 
+  \begin{equation}
+    \label{erm}
+    h_S \in \argmin_{h \in \hypspace} L_S(h)
+  \end{equation}
+
+  Now, what can be done with this empirical risk? By using the \emph{realizability assumption} and the \emph{i.i.d. assumption}, we can establish an upper bound on the error of the model.
+
+  \subsubsection{\textbf{The Realizability Assumption}} 
+    "There exists $h^* \in \hypspace$ s.t. $L_{(\dist, f)}(h^*) = 0$"\cite{shais}. This implies that given enough sets of samples $S$ from the distribution $\dist$, there exists some $S$ such that $L_S(h^*) = 0$ with probability 1. This in turn suggests that for every ERM domain and hypothesis there exists an optimal $h_S$ such that $L_S(h_S) = 0$. However, this only applies to the empirical risk - what about the real risk? And what about overfitting? This leads us to the next step:
+  \subsubsection{\textbf{The i.i.d. Assumption}} 
+    "Examples in the training set are independently and identically distributed (i.i.d.) according to the distribution" $\dist$\cite{shais}. This means that every element $x_i \in S$ is sampled according to $\dist$ and in turn labelled according to $f$, denoted by the term $S \sim \dist^m$ such that $m$ is the size of $S$\cite{shais}. The key feature of this assumption is that as $m$ increases, the likelihood that $S$ is properly representing $\dist$ (and that $h_S$ reflects $f$) also increases\cite{shais}.
   
+    From these two assumptions, we can establish that there is some chance less than 1 for any properly sampled $S$ to be a misrepresentation of $\dist$, labelled $\delta$, and consequentially we are able to formally name $(1-\delta)$ as the \emph{confidence parameter} of a prediction\cite{shais}.
+
+    In addition to describing the chance for the sample $S$ to be nonrepresentative, we can also choose a value to describe the quality of the hypothesis $h$. This is the \emph{accuracy parameter} $\epsilon$, the threshold of error or risk above which the model is considered to be to inaccurate to be useful\cite{shais}. I.e, a risk $L_{(\dist, f)}(h_S) > \epsilon$ is a failure, while $L_{(\dist, f)}(h_S) \leq \epsilon$ is \textbf{\emph{approximately correct}}.
+
 
 \section{Conclusion and Critical Analysis}
   
