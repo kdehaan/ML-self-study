@@ -21,34 +21,20 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-\bibitem{article}
-P.~Adams, ``The title of the work,'' \emph{The name of the journal}, vol.~4,
-  no.~2, pp. 201--213, 7 1993, an optional note.
+\bibitem{valiant}
+\BIBentryALTinterwordspacing
+L.~G. Valiant, ``A theory of the learnable,'' \emph{Commun. ACM}, vol.~27,
+  no.~11, p. 1134–1142, Nov. 1984. [Online]. Available:
+  \url{https://doi.org/10.1145/1968.1972}
+\BIBentrySTDinterwordspacing
 
-\bibitem{book}
-P.~Babington, \emph{The title of the work}, 3rd~ed., ser. 10.\hskip 1em plus
-  0.5em minus 0.4em\relax The address: The name of the publisher, 7 1993,
-  vol.~4, an optional note.
+\bibitem{haussler:}
+D.~Haussler, ``Part 1: Overview of the probably approximately correct (pac)
+  learning framework,'' 1995.
 
-\bibitem{booklet}
-P.~Caxton, ``The title of the work,'' How it was published, The address of the
-  publisher, 7 1993, an optional note.
-
-\bibitem{conference}
-P.~Draper, ``The title of the work,'' in \emph{The title of the book}, ser. 5,
-  T.~editor, Ed., vol.~4, The organization.\hskip 1em plus 0.5em minus
-  0.4em\relax The address of the publisher: The publisher, 7 1993, p. 213, an
-  optional note.
-
-\bibitem{inbook}
-P.~Eston, \emph{The title of the work}, 3rd~ed., ser. 5.\hskip 1em plus 0.5em
-  minus 0.4em\relax The address of the publisher: The name of the publisher, 7
-  1993, vol.~4, ch.~8, pp. 201--213, an optional note.
-
-\bibitem{incollection}
-P.~Farindon, ``The title of the work,'' in \emph{The title of the book},
-  3rd~ed., ser. 5, T.~editor, Ed.\hskip 1em plus 0.5em minus 0.4em\relax The
-  address of the publisher: The name of the publisher, 7 1993, vol.~4, ch.~8,
-  pp. 201--213, an optional note.
+\bibitem{shais}
+S.~Shalev-Shwartz and S.~Ben-David, \emph{Understanding Machine Learning: From
+  Theory to Algorithms}.\hskip 1em plus 0.5em minus 0.4em\relax USA: Cambridge
+  University Press, 2014.
 
 \end{thebibliography}
