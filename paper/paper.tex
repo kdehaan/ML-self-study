@@ -13,6 +13,7 @@
 \usepackage{amsmath}
 
 
+
 % \usepackage{subcaption}
 \lstset{numbers=left,stepnumber=1,basicstyle=\footnotesize\ttfamily}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -20,6 +21,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \def\code#1{\texttt{#1}}
 \def\dist{\mathcal{D}}
 \def\hypspace{\mathcal{H}}
+\def\bad{\mathcal{B}}
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
 
@@ -29,6 +31,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
   \endlist
 }
 \makeatother
+
+\newtheorem{corollary}{Corollary}
 
 \begin{document}
 
@@ -96,12 +100,82 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
   \subsubsection{\textbf{The Realizability Assumption}} 
     "There exists $h^* \in \hypspace$ s.t. $L_{(\dist, f)}(h^*) = 0$"\cite{shais}. This implies that given enough sets of samples $S$ from the distribution $\dist$, there exists some $S$ such that $L_S(h^*) = 0$ with probability 1. This in turn suggests that for every ERM domain and hypothesis there exists an optimal $h_S$ such that $L_S(h_S) = 0$. However, this only applies to the empirical risk - what about the real risk? And what about overfitting? This leads us to the next step:
   \subsubsection{\textbf{The i.i.d. Assumption}} 
-    "Examples in the training set are independently and identically distributed (i.i.d.) according to the distribution" $\dist$\cite{shais}. This means that every element $x_i \in S$ is sampled according to $\dist$ and in turn labelled according to $f$, denoted by the term $S \sim \dist^m$ such that $m$ is the size of $S$\cite{shais}. The key feature of this assumption is that as $m$ increases, the likelihood that $S$ is properly representing $\dist$ (and that $h_S$ reflects $f$) also increases\cite{shais}.
+    "Examples in the training set are independently and identically distributed (i.i.d.) according to the distribution" $\dist$\cite{shais}. This means that every element $x_i \in S$ is sampled according to $\dist$ and in turn labelled according to $f$, denoted by the term $S \sim \dist^m$ such that $m$ is the size of $S$\cite{shais}. While it is guaranteed that there exists some hypothesis $h_S$ such that the empirical risk is 0, as long as $S$ is nonrepresentative this zeroed empirical risk is simply a result of overfitting. The key feature of this assumption is that as $m$ increases, the likelihood that $S$ is properly representing $\dist$ (and that $h_S$ reflects $f$ instead of overfitting) also increases\cite{shais}. 
   
     From these two assumptions, we can establish that there is some chance less than 1 for any properly sampled $S$ to be a misrepresentation of $\dist$, labelled $\delta$, and consequentially we are able to formally name $(1-\delta)$ as the \emph{confidence parameter} of a prediction\cite{shais}.
 
-    In addition to describing the chance for the sample $S$ to be nonrepresentative, we can also choose a value to describe the quality of the hypothesis $h$. This is the \emph{accuracy parameter} $\epsilon$, the threshold of error or risk above which the model is considered to be to inaccurate to be useful\cite{shais}. I.e, a risk $L_{(\dist, f)}(h_S) > \epsilon$ is a failure, while $L_{(\dist, f)}(h_S) \leq \epsilon$ is \textbf{\emph{approximately correct}}.
+    In addition to describing the chance for the sample $S$ to be nonrepresentative, we can also choose a value to describe the quality of the hypothesis $h$. This is the \emph{accuracy parameter} $\epsilon$, the threshold of error or risk above which the model is considered to be to inaccurate to be useful\cite{shais}. I.e, a risk $L_{(\dist, f)}(h_S) > \epsilon$ is a failure, while $L_{(\dist, f)}(h_S) \leq \epsilon$ is \textbf{\emph{approximately correct}}\cite{shais}. We can now describe the chance that a sampled set $S$ will be overfit based on the size $m$ of the sample $S$, as seen in eq. \ref{overfit}\cite{shais}.
 
+    \begin{equation}
+      \label{overfit}
+      \dist^m(\{S|_x:L_{(\dist, f)}(h_S)>\epsilon\})
+    \end{equation}
+
+    The next step is to set an upper bound on the above value. Let $\hypspace_\bad$ be the set of hypotheses which will lead to a failure - that is, $\hypspace_\bad = \{h \in \hypspace: L_{(\dist, f)}(h) > \epsilon\}$\cite{shais}. Additionally, we describe the set of misleading samples $M = \{S|_x: \exists h \in \hypspace_\bad, L_S(h) = 0\}$ as the set of samples which produce zero empirical risk but do not correctly represent $f$\cite{shais}. This can equivalently be represented as $\{S|_x : L_{(\dist, f)}(h_S) > \epsilon \} \subseteq M$, an in turn allows us to rewrite $M$ as in equation \ref{big_em}\cite{shais}.
+
+    \begin{equation}
+      \label{big_em}
+      M = \bigcup_{h\in\hypspace_\bad} \{S|_x:L_S(h) = 0\}
+    \end{equation}
+
+    This leads to the formalized upper bound of equation \ref{first_bound}\cite{shais}.
+
+    \begin{equation}
+      \label{first_bound}
+      \begin{aligned}
+      \dist^m(\{S|_x:L_{(\dist, f)}(h_S)>\epsilon\}) \leq \dist^m(M) \\ \dist^m(M) = \dist^m(\cup_{h\in\hypspace_\bad}\{S|_x:L_S(h) = 0\})
+      \end{aligned}
+    \end{equation}
+
+    Next, using the property of the \emph{union bound} - formally, $\dist (A\cup B) \leq \dist (A) + \dist (B)$ - we can transform the right hand side of the above equation\cite{shais}: 
+
+    \begin{equation}
+      \label{second_bound}
+      \dist^m(\{S|_x:L_{(\dist, f)}(h_S)>\epsilon\}) \leq \sum_{h\in\hypspace_\bad} \dist^m(\{S|_x:L_s(h) = 0\})
+    \end{equation}
+
+    For each summand in the new right-hand side of the equation, we attempt to find a bound. Notice that the event $L_S(h)=0$ is the same as $\forall i, h(x_i) = f(x_i)$, and since all training set examples are sampled i.i.d we obtain equation \ref{third_bound}\cite{shais}.
+
+    \begin{equation}
+      \label{third_bound}
+      \begin{aligned}
+        \dist^m(\{S|_x:L_s(h) = 0\} = \dist^m(\{S|_x:\forall i, h(x_i) = f(x_i)\}) \\
+        = \prod^m_{i = 1}\dist(\{x_i:h(x_i)=f(x_i)\})
+      \end{aligned}
+    \end{equation}
+
+    Because $h \in \hypspace_\bad$, it follows that each individual sampling of an element $x_i$ from $\dist$ is thus\cite{shais}
+
+    \begin{equation}
+      \label{fourth_bound}
+      \dist(\{x_i:h(x_i)=f(x_i)\}) = 1-L_{(\dist, f)}(h) \leq 1-\epsilon
+    \end{equation}
+
+    Taking equations \ref{third_bound} and \ref{fourth_bound} in combination with the inequality $1-\epsilon \leq e^{-\epsilon}$ (a simple, provable inequality used for simplification), we obtain the following\cite{shais}:
+
+    \begin{equation}
+      \label{fifth_bound}
+      \dist^m(\{S|_x:L_S(h) =0\}) \leq (1-\epsilon)^m \leq e^{-\epsilon m}
+    \end{equation}
+
+    And by combining equations \ref{second_bound} and \ref{fifth_bound} we produce the final upper bound of\cite{shais}:
+
+    \begin{equation}
+      \label{final_bound}
+      \dist^m(\{S|_x:L_{(\dist, f)}(h_S) > \epsilon \}) \leq |\hypspace_\bad | e^{-\epsilon m} \leq |\hypspace|e^{-\epsilon m}
+    \end{equation}
+
+    Which leads to the more easily digestible conclusion of ERM:
+
+    \begin{corollary}
+      Given a finite hypothesis class $\hypspace$, take $\delta \in (0, 1)$ and $\epsilon > 0$. Given an integer value $m$ that satisfies 
+      \[m \geq \frac{log(\frac{|\hypspace|}{\delta})}{\epsilon}\] then for any labeling function $f$ and data distribution $\dist$ for which the realizability function holds, as long as the sample $S$ of size $m$ is selected i.i.d then it holds that \[L_{(\dist, f)}(h_S) \leq \epsilon\] with probability of at least $1 - \delta$\cite{shais}.
+    \end{corollary}
+
+    In other words, if the assumptions behind ERM are satisfied it becomes possible to determine if a model will \emph{\textbf{probably}} ($1-\delta$) be \emph{\textbf{approximately correct}} ($L_{(\dist, f)}(h_S) \leq \epsilon$)\cite{shais}.
+
+  \subsection{Bringing it Together}
+  
 
 \section{Conclusion and Critical Analysis}
   
